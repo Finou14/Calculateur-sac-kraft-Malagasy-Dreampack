@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur Sac Kraft — Malagasy Dreampack</title>
+<style>
+html, body { font-family: 'Segoe UI', sans-serif; background: #fdf0f5; width: 100%; }
+.container { background: #c8a96e; width: 100%; max-width: 810px; margin: 0 auto; }
+.banner { width: 100%; height: 200px; object-fit: cover; object-position: center 40%; display: block; }
+
+.header {
+  background: #fff;
+  color: #e86fa0;
+  padding: 24px 40px 20px;
+  text-align: center;
+}
+.header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.5px; color: #6ec6c6; }
+.header p  { font-size: 0.88rem; opacity: 0.8; margin-top: 5px; color: #e86fa0; }
+
+.body { padding: 24px 40px; max-width: 620px; margin: 0 auto; }
+
+.stitle {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1px; color: #fff;
+  margin-bottom: 10px; margin-top: 20px;
+}
+.stitle:first-child { margin-top: 0; }
+
+.dims-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; transform: scale(0.8); transform-origin: top left; width: 125%; }
+.field label { display: block; font-size: 0.72rem; color: #fff; margin-bottom: 5px; font-weight: 700; }
+.field input {
+  width: 100%; padding: 9px 8px;
+  border: 2px solid #fff; border-radius: 20px;
+  font-size: 0.88rem; color: #e86fa0; background: #fff;
+  text-align: center; min-width: 0;
+}
+.field input:focus { outline: none; border-color: #f2c0d5; background: #fff; }
+.unit-hint { font-size: 0.68rem; color: rgba(255,255,255,0.7); margin-top: 3px; text-align: center; }
+
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; transform: scale(0.8); transform-origin: top left; width: 125%; }
+.opt {
+  border: 2.5px solid rgba(255,255,255,0.5); border-radius: 16px;
+  padding: 12px 14px; cursor: pointer; background: rgba(255,255,255,0.15);
+  transition: all 0.18s;
+}
+.opt:hover { border-color: #fff; background: rgba(255,255,255,0.25); }
+.opt.sel { border-color: #fff; background: #fff; }
+.opt-label { font-weight: 800; font-size: 0.86rem; color: #fff; }
+.opt-sub   { font-size: 0.73rem; color: rgba(255,255,255,0.7); margin-top: 2px; }
+.opt.sel .opt-label { color: #e86fa0; }
+.opt.sel .opt-sub   { color: #f2a0c0; }
+
+.qty-row {
+  display: flex; align-items: center; gap: 12px; margin-top: 14px;
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 20px; padding: 10px 16px;
+}
+.qty-row label { font-size: 0.85rem; color: #fff; font-weight: 700; white-space: nowrap; }
+.qty-row input {
+  width: 100px; padding: 7px 10px;
+  border: 2px solid #fff; border-radius: 16px;
+  font-size: 0.95rem; color: #e86fa0; background: #fff;
+}
+.qty-row input:focus { outline: none; border-color: #f2c0d5; }
+.qty-row span { font-size: 0.82rem; color: rgba(255,255,255,0.8); }
+
+.btn-calc {
+  width: 100%; margin-top: 20px; padding: 14px;
+  background: #fff;
+  color: #e86fa0; border: none; border-radius: 30px;
+  font-size: 1rem; font-weight: 800; cursor: pointer;
+  letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.btn-calc:hover { opacity: 0.92; transform: translateY(-1px); }
+
+.erreur {
+  color: #fff; font-size: 0.82rem; margin-top: 10px;
+  display: none; font-weight: 600;
+  background: rgba(255,255,255,0.2); border: 1.5px solid #fff;
+  border-radius: 10px; padding: 8px 12px;
+}
+
+.limit-box {
+  display: none; margin-top: 14px;
+  background: rgba(255,255,255,0.2); border: 2px solid #fff;
+  border-radius: 16px; padding: 16px 18px;
+}
+.limit-box p { color: #fff; font-size: 0.88rem; font-weight: 600; line-height: 1.5; margin: 0; }
+
+.result-box {
+  display: none; margin-top: 20px;
+  background: #fff;
+  border: 2.5px solid #fff;
+  border-radius: 20px; padding: 20px;
+  text-align: center;
+}
+.r-label {
+  font-size: 0.72rem; color: #e86fa0; margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 800;
+}
+.r-amount { font-size: 2.4rem; font-weight: 900; color: #e86fa0; line-height: 1; }
+.r-currency { font-size: 1rem; color: #f2a0c0; font-weight: 700; margin-left: 4px; }
+.r-badges { margin-top: 10px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { display: inline-block; font-size: 0.72rem; padding: 4px 12px; border-radius: 20px; font-weight: 800; }
+.bk { background: #6ec6c6; color: #fff; }
+.bw { background: #e0f0f0; color: #1a7a7a; }
+.bn { background: #333; color: #fff; }
+.bc { background: linear-gradient(90deg,#e86fa0,#6ec6c6); color:#fff; }
+
+.divider { border: none; border-top: 1.5px solid #f2c0d5; margin: 14px 0; }
+.total-box { display: none; }
+.livr-box  { display: none; }
+.livr-text { font-size: 0.92rem; font-weight: 700; color: #b04070; }
+.livr-date { color: #e86fa0; font-weight: 900; }
+.livr-sub  { font-size: 0.75rem; color: #aaa; margin-top: 3px; }
+
+.btn-cmd {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 14px; padding: 13px;
+  background: linear-gradient(135deg, #0084ff, #006edb);
+  color: #fff; border: none; border-radius: 30px;
+  font-size: 1rem; font-weight: 800; cursor: pointer;
+  text-decoration: none; box-shadow: 0 4px 15px rgba(0,110,219,0.25);
+}
+.btn-cmd:hover { opacity: 0.92; }
+
+.footer {
+  background: #fff;
+  color: #e86fa0; text-align: center;
+  padding: 14px 20px; font-size: 0.82rem; margin-top: 10px;
+  font-weight: 700;
+}
+.footer a { color: #e86fa0; text-decoration: none; font-weight: 700; }
+
+@media (max-width: 768px) {
+  .banner { height: 160px; }
+  .header { padding: 18px 20px 14px; }
+  .body { padding: 18px 20px; max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .banner { height: 130px; }
+  .header h1 { font-size: 1.2rem; }
+  .body { padding: 14px 16px; }
+  .dims-grid { gap: 8px; }
+  .r-amount { font-size: 1.8rem; }
+  .btn-calc { padding: 12px; font-size: 0.95rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <img class="banner" src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800" alt="Sac kraft" onerror="this.style.display='none'">
+
+  <div class="header">
+    <h1>🛍️ Calculateur de Sac Kraft</h1>
+    <p>Malagasy Dreampack — Obtenez instantanément le coût de votre sac</p>
+  </div>
+
+  <div class="body">
+
+    <div class="stitle">📐 Dimensions du sac (cm)</div>
+    <div class="dims-grid">
+      <div class="field">
+        <label>Hauteur</label>
+        <input type="number" id="hauteur" min="1" placeholder="ex: 30">
+        <div class="unit-hint">cm</div>
+      </div>
+      <div class="field">
+        <label>Largeur</label>
+        <input type="number" id="largeur" min="1" placeholder="ex: 20">
+        <div class="unit-hint">cm</div>
+      </div>
+      <div class="field">
+        <label>Soufflet</label>
+        <input type="number" id="soufflet" min="1" placeholder="ex: 8">
+        <div class="unit-hint">cm</div>
+      </div>
+    </div>
+
+    <div class="stitle">📄 Type de papier</div>
+    <div class="opts">
+      <div class="opt sel" id="ck" onclick="sel('papier','kraft')">
+        <div class="opt-label">Kraft Naturel</div>
+        <div class="opt-sub">Brun standard</div>
+      </div>
+      <div class="opt" id="cb" onclick="sel('papier','blanc')">
+        <div class="opt-label">Kraft Blanc</div>
+        <div class="opt-sub">+200 Ar</div>
+      </div>
+    </div>
+
+    <div class="stitle">🖨️ Type d'impression</div>
+    <div class="opts">
+      <div class="opt sel" id="cn" onclick="sel('impression','noir')">
+        <div class="opt-label">Impression Noire</div>
+        <div class="opt-sub">Standard</div>
+      </div>
+      <div class="opt" id="cc" onclick="sel('impression','couleur')">
+        <div class="opt-label">Impression Couleur</div>
+        <div class="opt-sub">+200 Ar</div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <label>Quantité</label>
+      <input type="number" id="quantite" min="1" placeholder="ex: 500">
+      <span>unités</span>
+    </div>
+
+    <div class="erreur" id="erreur"></div>
+
+    <button class="btn-calc" onclick="calculer()">Calculer le coût</button>
+
+    <div class="limit-box" id="limit-box">
+      <p>Ces dimensions dépassent nos capacités actuelles. Contactez <strong>Malagasy Dreampack</strong> pour trouver une solution adaptée à votre projet.</p>
+    </div>
+
+    <div class="result-box" id="result-box">
+      <div class="r-label">Coût unitaire</div>
+      <div><span class="r-amount" id="r-total">—</span><span class="r-currency">Ar</span></div>
+      <div class="r-badges" id="r-badges"></div>
+
+      <div class="total-box" id="total-box">
+        <hr class="divider">
+        <div class="r-label">Total commande</div>
+        <div><span class="r-amount" id="r-total-global">—</span><span class="r-currency">Ar</span></div>
+      </div>
+
+      <div class="livr-box" id="livr-box">
+        <hr class="divider">
+        <div class="livr-text">Votre livraison est prévue pour le <span class="livr-date" id="r-livraison"></span> !</div>
+        <div class="livr-sub">7 jours ouvrés</div>
+      </div>
+
+      <a class="btn-cmd" id="btn-cmd" href="#" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.914 1.456 5.515 3.73 7.22V21l2.15-1.18c.574.16 1.183.247 1.812.26C12 20.08 12 20.08 12 20.08c5.523 0 10-4.145 10-9.243S17.523 2 12 2z"/></svg>
+        Passer commande via Messenger
+      </a>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    📞 <a href="tel:+261349365220">+261 34 93 652 20</a> &nbsp;|&nbsp;
+    ✉️ <a href="mailto:malagasydreampack@gmail.com">malagasydreampack@gmail.com</a>
+  </div>
+</div>
+
+<script>
+var PRIX = 0.7;
+var papier = 'kraft';
+var impression = 'noir';
+
+function sel(type, val) {
+  if (type === 'papier') {
+    papier = val;
+    document.getElementById('ck').className = val === 'kraft' ? 'opt sel' : 'opt';
+    document.getElementById('cb').className = val === 'blanc' ? 'opt sel' : 'opt';
+  } else {
+    impression = val;
+    document.getElementById('cn').className = val === 'noir'    ? 'opt sel' : 'opt';
+    document.getElementById('cc').className = val === 'couleur' ? 'opt sel' : 'opt';
+  }
+}
+
+function calculer() {
+  var H   = parseFloat(document.getElementById('hauteur').value);
+  var L   = parseFloat(document.getElementById('largeur').value);
+  var S   = parseFloat(document.getElementById('soufflet').value);
+  var qte = parseInt(document.getElementById('quantite').value) || 0;
+
+  var err       = document.getElementById('erreur');
+  var limitBox  = document.getElementById('limit-box');
+  var resultBox = document.getElementById('result-box');
+  var totalBox  = document.getElementById('total-box');
+  var livrBox   = document.getElementById('livr-box');
+
+  err.style.display       = 'none';
+  err.textContent         = '';
+  limitBox.style.display  = 'none';
+  resultBox.style.display = 'none';
+  totalBox.style.display  = 'none';
+  livrBox.style.display   = 'none';
+
+  if (isNaN(H) || isNaN(L) || isNaN(S) || H <= 0 || L <= 0 || S <= 0) {
+    err.textContent   = '⚠️ Veuillez renseigner toutes les dimensions.';
+    err.style.display = 'block';
+    return;
+  }
+
+  if (H > 50) {
+    limitBox.style.display = 'block';
+    return;
+  }
+
+  var Hd = H + 2 + S / 2 + 2;
+  var Ld = L * 2 + S * 2 + 4;
+  var doubleColle = false;
+  if (Ld > 102) { Ld = Ld / 2 + 2; doubleColle = true; }
+
+  var surface = Hd * Ld;
+  var moq = surface < 1700 ? 100 : 50;
+
+  if (qte > 0 && qte < moq) {
+    err.textContent   = 'La quantité minimum de commande est de ' + moq + ' pièces.';
+    err.style.display = 'block';
+    return;
+  }
+
+  var maj = 0;
+  if (papier === 'blanc' && impression === 'couleur') maj = 400;
+  else { if (papier === 'blanc') maj += 200; if (impression === 'couleur') maj += 200; }
+
+  var cout = (surface * PRIX + maj) * (doubleColle ? 2 : 1);
+  cout = Math.ceil(Math.max(cout, 600) / 100) * 100;
+
+  document.getElementById('r-total').textContent = cout.toLocaleString();
+  document.getElementById('r-badges').innerHTML =
+    (papier === 'kraft' ? '<span class="badge bk">Kraft Naturel</span>' : '<span class="badge bw">Kraft Blanc</span>') +
+    (impression === 'noir' ? '<span class="badge bn">Noir</span>' : '<span class="badge bc">Couleur</span>');
+
+  resultBox.style.display = 'block';
+
+  if (qte > 0) {
+    document.getElementById('r-total-global').textContent = (cout * qte).toLocaleString();
+    totalBox.style.display = 'block';
+  }
+
+  var jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var mois  = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var date  = new Date();
+  var ouv   = 0;
+  while (ouv < 7) {
+    date.setDate(date.getDate() + 1);
+    if (date.getDay() !== 0 && date.getDay() !== 6) ouv++;
+  }
+  var dateStr = jours[date.getDay()] + ' ' + date.getDate() + ' ' + mois[date.getMonth()] + ' ' + date.getFullYear();
+  document.getElementById('r-livraison').textContent = dateStr;
+  livrBox.style.display = 'block';
+
+  var tp  = papier === 'kraft' ? 'Kraft Naturel' : 'Kraft Blanc';
+  var ti  = impression === 'noir' ? 'Impression Noire' : 'Impression Couleur';
+  var ttl = qte > 0 ? '\n\u{1F4B5} Total : ' + (cout * qte).toLocaleString() + ' Ar' : '';
+  var msg = 'Bonjour Malagasy Dreampack ! Je souhaite passer commande pour :\n\n\u{1F4E6} Sac : ' + H + 'x' + L + 'x' + S + ' cm\n\u{1F4C4} Papier : ' + tp + '\n\u{1F5A8} Impression : ' + ti + '\n\u{1F522} Quantité : ' + (qte > 0 ? qte : 'non précisée') + ' unités\n\u{1F4B0} Coût unitaire : ' + cout.toLocaleString() + ' Ar' + ttl + '\n\u{1F69A} Livraison estimée : ' + dateStr + '\n\nMerci de confirmer ma commande.';
+  document.getElementById('btn-cmd').href = 'https://m.me/MalagasyDreampack?text=' + encodeURIComponent(msg);
+}
+</script>
+</body>
+</html>
