@@ -344,6 +344,7 @@ function calculer() {
   var ttl = qte > 0 ? '\nTotal : ' + (cout * qte).toLocaleString() + ' Ar' : '';
   var msg = 'Bonjour Malagasy Dreampack ! Je souhaite passer commande pour :\n\nSac : ' + H + 'x' + L + 'x' + S + ' cm\nPapier : ' + tp + '\nImpression : ' + ti + '\nQuantite : ' + (qte > 0 ? qte : 'non precisee') + ' unites\nCout unitaire : ' + cout.toLocaleString() + ' Ar' + ttl + '\nLivraison estimee : ' + dateStr + '\n\nMerci de confirmer ma commande.';
   document.getElementById('btn-cmd').href = 'https://www.facebook.com/messages/t/MalagasyDreampack?text=' + encodeURIComponent(msg);
+  document.getElementById('btn-cmd').target = window.location.href.indexOf('facebook.com') !== -1 ? '_self' : '_blank';
 }
 </script>
 </body>
